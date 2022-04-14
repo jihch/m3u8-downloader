@@ -1,0 +1,36 @@
+ffmpeg-home: "L:\\2019\\6\\20\\ffmpeg-20190620-86f04b9-win64-static"
+
+m3u8-index-url: "https://vod1.bdzybf7.com/20220412/eFGSzyuX/2000kb/hls/index.m3u8"
+
+task: 
+  home: "E:\\record\\2022\\4\\14\\茅山天师\\"
+  m3u8-index-file-pathname: "${task.home}\\index.m3u8"
+  ts-dir-pathname: "${task.home}\\ts"
+  aes-key-filename: "${task.home}\\key.key"
+  aes-decode-dir: "${task.home}\\decode"
+  
+  
+#ExecutorService: newSingleThreadExecutor|newFixedThreadPool|newCachedThreadPool
+executorService: newSingleThreadExecutor
+newFixedThreadPool:
+  nThreads: 5
+  
+request:
+  connectTimeout: 200000
+  socketTimeout: 200000
+  proxy:
+     enabled: false
+     hostname: "127.0.0.1"
+     port: 10809
+     
+  
+final-media-filename: "video.mp4"
+
+gpu:
+  enabled: true
+  
+logging:
+   #level:
+    #  org.apache.http: debug
+   pattern:
+      console: "%date %level [%thread] %logger:%L %msg %n"
