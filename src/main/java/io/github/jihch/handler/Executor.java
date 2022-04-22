@@ -86,9 +86,7 @@ public class Executor {
 		
 		//下载M3U8索引文件
 		DownloadTask task = new DownloadTask(index, m3u8IndexFilePathname);
-		List<DownloadTask> taskList = new ArrayList<>();
-		taskList.add(task);
-		downloader.download(taskList);
+		downloader.download(task);
 		
 		//解析M3U8文件
 		M3U8 m3u8 = extractor.extract(m3u8IndexFilePathname);

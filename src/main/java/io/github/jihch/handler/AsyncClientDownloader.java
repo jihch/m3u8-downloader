@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -171,6 +173,13 @@ public class AsyncClientDownloader implements Downloader {
 			}
 		}
 
+	}
+
+	@Override
+	public void download(DownloadTask... tasks) {
+		List<DownloadTask> taskList = new ArrayList<>(tasks.length);
+		Collections.addAll(taskList, tasks);
+		download(tasks);
 	}
 
 }
