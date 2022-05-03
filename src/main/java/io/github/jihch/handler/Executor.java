@@ -52,7 +52,7 @@ public class Executor {
 	 * 用于下载文件
 	 */
 	@Autowired
-	private AsyncClientDownloader downloader;
+	private Downloader downloader;
 	
 	/**
 	 * 用于对进行AES编码的TS文件进行解码
