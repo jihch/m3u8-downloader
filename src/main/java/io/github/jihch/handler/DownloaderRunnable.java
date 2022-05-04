@@ -50,12 +50,17 @@ public class DownloaderRunnable implements Runnable {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		Future<File> future = closeableHttpAsyncClient.execute(requestProducer, consumer, null);
+		
 		File f = null;
-		try {
-			f = future.get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
+		boolean success = false;
+		while (!success) {
+			Future<File> future = closeableHttpAsyncClient.execute(requestProducer, consumer, null);
+			try {
+				f = future.get();
+				success = true;
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
 		}
 		String msg = String.format(FORMAT, f.getName(), count.incrementAndGet(), total);
 		log.info(msg);

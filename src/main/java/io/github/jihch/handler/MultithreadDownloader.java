@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLContext;
@@ -42,37 +43,28 @@ public class MultithreadDownloader implements Downloader {
 		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 			e.printStackTrace();
 		}
-		CloseableHttpAsyncClient httpclient = HttpAsyncClients.custom().setSSLContext(ctx)
-				.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
-		httpclient.start();
+		
+		try (CloseableHttpAsyncClient httpclient = HttpAsyncClients.custom().setSSLContext(ctx)
+				.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build()) {
+			
+			httpclient.start();
 
-		int availableProcessors = Runtime.getRuntime().availableProcessors();
-		int threadCount = availableProcessors << 1;
-		ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-		AtomicInteger counter = new AtomicInteger(0);
-		taskList.forEach(task -> {
-			DownloaderRunnable r = new DownloaderRunnable(httpclient, task, counter, taskList.size());
-			executorService.execute(r);
-		});
-		executorService.shutdown();
+			int availableProcessors = Runtime.getRuntime().availableProcessors();
+			int threadCount = availableProcessors << 1;
+			ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+			AtomicInteger counter = new AtomicInteger(0);
+			taskList.forEach(task -> {
+				DownloaderRunnable r = new DownloaderRunnable(httpclient, task, counter, taskList.size());
+				executorService.execute(r);
+			});
+			executorService.shutdown();
 
-		while (true) {
-			if (executorService.isTerminated()) {
-				System.out.println("所有的子线程都结束了！");
-				break;
-			}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+			executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
 
-		try {
-			httpclient.close();
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	@Override
